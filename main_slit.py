@@ -35,10 +35,10 @@ def get_api_info():
 
 info_res = get_api_info()
 
-if info_res:
-    st.sidebar.write(f"Backend Aktif Berjalan!")
-else:
-    st.sidebar.error("Backend tidak terjangkau")
+# if info_res:
+#     st.sidebar.write(f"Backend Aktif Berjalan!")
+# else:
+#     st.sidebar.error("Backend tidak terjangkau")
 
 # Streamlit Edits
 st.set_page_config(page_title="Placement Analytics Pro", layout="wide", page_icon="🎓")

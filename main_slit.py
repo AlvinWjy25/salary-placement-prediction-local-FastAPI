@@ -13,8 +13,22 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 BASE_DIR = os.getcwd()
 
 st.set_page_config(page_title = "Placement Prediction App", layout = "wide")
-API_URL = 'http://127.0.0.1:8000/predict'
-info_res = requests.get("http://127.0.0.1:8000/info").json()
+API_URL_BASE = 'http://127.0.0.1:8000/predict'
+
+@st.cache_data
+def get_api_info():
+    try:
+        res = requests.get(f"{API_URL_BASE}/info", timeout=5)
+        return res.json()
+    except:
+        return None
+
+info_res = get_api_info()
+
+if info_res:
+    st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
+else:
+    st.sidebar.error("Backend tidak terjangkau")
 
 st.title("Student Placement Prediction")
 st.write("Masukkan data mahasiswa di bawah ini untuk memprediksi status penempatan.")

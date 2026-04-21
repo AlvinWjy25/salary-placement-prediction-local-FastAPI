@@ -41,7 +41,7 @@ info_res = get_api_info()
 #     st.sidebar.error("Backend tidak terjangkau")
 
 # Streamlit Edits
-st.set_page_config(page_title="Placement Analytics Pro", layout="wide", page_icon="🎓")
+st.set_page_config(page_title="Placement Analytics Pro", layout="wide")
 # st.markdown("""
 #     <style>
 #     .main { background-color: #f5f7f9; }

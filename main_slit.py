@@ -52,7 +52,7 @@ st.set_page_config(page_title="Placement Analytics Pro", layout="wide")
 
 #Sidebar
 with st.sidebar:
-    st.header("⚙️ System Control")
+    st.header("System Control")
     st.info("Aplikasi ini memprediksi peluang kerja mahasiswa menggunakan model prediksi XGBoost berdasarkan metrik akademik dan skill.")
 
     st.divider()
@@ -78,7 +78,7 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 
 with st.form("prediction_form"):
-    tab1, tab2, tab3 = st.tabs(["📚 Akademik", "🛠️ Skills & Projects", "💼 Pengalaman"])
+    tab1, tab2, tab3 = st.tabs(["Akademik", "Skills & Projects", "Pengalaman"])
     
     with tab1:
         c1, c2 = st.columns(2)

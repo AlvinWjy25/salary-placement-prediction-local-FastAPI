@@ -7,6 +7,7 @@ import os
 import requests
 import subprocess
 import time
+import plotly.graph_objects as go
 
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -14,7 +15,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 BASE_DIR = os.getcwd()
 
-if "backend_started" not in st.session_state:
+if "backend_started" not in st.session_state: #auto start
     try:
         subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000", "--host", "127.0.0.1"])
         st.session_state["backend_started"] = True
@@ -22,7 +23,6 @@ if "backend_started" not in st.session_state:
     except Exception as e:
         st.error(f"Gagal memulai backend: {e}")
 
-st.set_page_config(page_title = "Placement Prediction App", layout = "wide")
 API_URL_BASE = 'http://127.0.0.1:8000/predict'
 
 @st.cache_data
@@ -36,72 +36,124 @@ def get_api_info():
 info_res = get_api_info()
 
 if info_res:
-    # st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
     st.sidebar.write(f"Model Aktif Berjalan!")
 else:
     st.sidebar.error("Backend tidak terjangkau")
 
+# Streamlit Edits
+st.set_page_config(page_title="Placement Analytics Pro", layout="wide", page_icon="🎓")
+# st.markdown("""
+#     <style>
+#     .main { background-color: #f5f7f9; }
+#     .stButton>button { width: 100%; border-radius: 5px; height: 3em; }
+#     .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+#     </style>
+#     """)
+
+#Sidebar
+with st.sidebar:
+    st.header("⚙️ System Control")
+    st.info("Aplikasi ini memprediksi peluang kerja mahasiswa menggunakan model prediksi XGBoost berdasarkan metrik akademik dan skill.")
+
+    st.divider()
+    st.subheader("Backend Status")
+    try:
+        # Simple healthcheck
+        res = requests.get('http://127.0.0.1:8000/', timeout=2)
+        if res.status_code == 200:
+            st.success("● FastAPI Online")
+        else:
+            st.warning("○ API Ready (No Response)")
+    except:
+        st.error("○ API Offline")
+    
+    st.divider()
+    st.caption("v1.0 | Sklearn 1.8.0")
+
+#Main UI
 st.title("Student Placement Prediction")
 st.write("Masukkan data mahasiswa di bawah ini untuk memprediksi status penempatan.")
-# st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
 st.divider()
 
 col1, col2, col3 = st.columns(3)
 
-with col1:
-    gender = st.selectbox("Gender", ['Male', 'Female'])
-    ssc_percentage = st.number_input("SSC Percentage (10th)", 0, 100, 70)
-    hsc_percentage = st.number_input("HSC Percentage (12th)", 0, 100, 70)
-    degree_percentage = st.number_input("Degree Percentage", 0, 100, 70)
-    cgpa = st.number_input("CGPA", 0.0, 10.0, 8.0, step=0.1)
+with st.form("prediction_form"):
+    tab1, tab2, tab3 = st.tabs(["📚 Akademik", "🛠️ Skills & Projects", "💼 Pengalaman"])
+    
+    with tab1:
+        c1, c2 = st.columns(2)
+        with c1:
+            gender = st.selectbox("Gender", ['Male', 'Female'])
+            cgpa = st.slider("Current CGPA", 0.0, 10.0, 8.0, step=0.1)
+        with c2:
+            ssc_percentage = st.number_input("SSC % (10th Grade)", 0, 100, 75)
+            hsc_percentage = st.number_input("HSC % (12th Grade)", 0, 100, 75)
+            degree_percentage = st.number_input("Degree %", 0, 100, 75)
 
-with col2:
-    entrance_exam_score = st.number_input("Entrance Exam Score", 0, 100, 75)
-    technical_skill_score = st.number_input("Technical Skill Score", 0, 100, 75)
-    soft_skill_score = st.number_input("Soft Skill Score", 0, 100, 75)
-    internship_count = st.number_input("Internship Count", 0, 10, 1)
-    live_projects = st.number_input("Live Projects", 0, 10, 1)
+    with tab2:
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            technical_skill_score = st.slider("Technical Skill", 0, 100, 70)
+            soft_skill_score = st.slider("Soft Skill", 0, 100, 70)
+        with c2:
+            entrance_exam_score = st.number_input("Entrance Exam Score", 0, 100, 75)
+            attendance_percentage = st.number_input("Attendance %", 0, 100, 85)
+        with c3:
+            live_projects = st.number_input("Live Projects", 0, 10, 1)
+            extracurricular = st.radio("Extracurricular Activities", ["Yes", "No"], horizontal=True)
 
-with col3:
-    work_experience_months = st.number_input("Work Experience (Months)", 0, 60, 0)
-    certifications = st.number_input("Certifications Count", 0, 10, 0)
-    attendance_percentage = st.number_input("Attendance Percentage", 0, 100, 85)
-    # backlogs = st.number_input("Number of Backlogs", 0, 10, 0)
-    extracurricular = st.selectbox("Extracurricular Activities", ["Yes", "No"])
+    with tab3:
+        c1, c2 = st.columns(2)
+        with c1:
+            work_experience_months = st.number_input("Work Experience (Months)", 0, 60, 0)
+        with c2:
+            internship_count = st.number_input("Internship Count", 0, 10, 1)
+            certifications = st.number_input("Certifications Count", 0, 10, 0)
+
+    submit_button = st.form_submit_button("Analisis Peluang Kerja", type="primary")
 
 st.divider()
 
-if st.button("Predict Placement Status", type = 'primary'):
+if submit_button:
     payload = {
-        "gender": gender,
-        "ssc_percentage": ssc_percentage,
-        "hsc_percentage": hsc_percentage,
-        "degree_percentage": degree_percentage,
-        "cgpa": cgpa,
-        "entrance_exam_score": entrance_exam_score,
-        "technical_skill_score": technical_skill_score,
-        "soft_skill_score": soft_skill_score,
-        "internship_count": internship_count,
-        "live_projects": live_projects,
-        "work_experience_months": work_experience_months,
-        "certifications": certifications,
-        "attendance_percentage": attendance_percentage,
-        # "backlogs": backlogs,
-        "extracurricular_activities": extracurricular
+        "gender": gender, "ssc_percentage": ssc_percentage, "hsc_percentage": hsc_percentage,
+        "degree_percentage": degree_percentage, "cgpa": cgpa, "entrance_exam_score": entrance_exam_score,
+        "technical_skill_score": technical_skill_score, "soft_skill_score": soft_skill_score,
+        "internship_count": internship_count, "live_projects": live_projects,
+        "work_experience_months": work_experience_months, "certifications": certifications,
+        "attendance_percentage": attendance_percentage, "extracurricular_activities": extracurricular
     }
 
-    with st.spinner("Menghubungi API Backend..."):
+    # Visualisasi Radar Chart untuk Profil Mahasiswa
+    st.subheader("Profil Kompetensi Mahasiswa")
+    categories = ['Technical', 'Soft Skills', 'Academic', 'Attendance', 'Entrance']
+    values = [technical_skill_score, soft_skill_score, degree_percentage, attendance_percentage, entrance_exam_score]
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(r=values, theta=categories, fill='toself', name='Student Profile'))
+    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+
+    with st.spinner("Loading Prediction"):
         try:
-            response = requests.post(API_URL_BASE, json = payload)
+            response = requests.post(API_URL_BASE, json=payload)
             if response.status_code == 200:
                 result = response.json()
-
+                
+                st.divider()
+                res_col1, res_col2 = st.columns(2)
+                
                 if result['status'] == 1:
-                    st.success("Hasil Prediksi: TERSEDIA (PLACED)")
-                    st.metric("\tPrediksi Gaji:", f"{result['salary']:,.2f} LPA")
+                    with res_col1:
+                        st.metric("Status Penempatan", "PLACED", delta="Tersedia")
+                    with res_col2:
+                        st.metric("Estimasi Gaji (LPA)", f"{result['salary']:,.2f}", delta="Annual Package")
+                    st.success(f"Mahasiswa diprediksi mendapatkan penempatan dengan paket gaji sebesar {result['salary']:,.2f} LPA.")
                 else:
-                    st.warning("Hasil Prediksi: TIDAK TERSEDIA (NOT PLACED)")
+                    with res_col1:
+                        st.metric("Status Penempatan", "NOT PLACED", delta="-", delta_color="inverse")
+                    st.warning("Berdasarkan data, mahasiswa memerlukan peningkatan pada skill teknis atau akademik.")
             else:
-                st.error(f"BACKEND ERROR: {response.status_code}")
+                st.error(f"Gagal processing data. Error Code: {response.status_code}")
         except Exception as e:
-            st.error(f"Gagal Terhubung Ke Backend!")
+            st.error("Backend gagal tersambung. Apakah FastAPI berjalan di port:8000?")

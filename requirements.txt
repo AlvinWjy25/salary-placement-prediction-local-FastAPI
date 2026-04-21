@@ -6,3 +6,4 @@ pandas
 mlflow
 joblib
 xgboost
+plotly

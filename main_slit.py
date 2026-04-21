@@ -18,8 +18,8 @@ API_URL_BASE = 'http://127.0.0.1:8000/predict'
 @st.cache_data
 def get_api_info():
     try:
-        res = requests.post(f"{API_URL_BASE}/info", json = features)
-        # return res.json()
+        res = requests.get(f"{API_URL_BASE}/info", timeout=5)
+        return res.json()
     except:
         return None
 

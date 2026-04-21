@@ -5,6 +5,8 @@ import joblib
 import pickle 
 import os
 import requests
+import subprocess
+import time
 
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer

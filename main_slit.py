@@ -26,7 +26,8 @@ def get_api_info():
 info_res = get_api_info()
 
 if info_res:
-    st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
+    # st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
+    st.sidebar.write(f"Model Aktif Berjalan!")
 else:
     st.sidebar.error("Backend tidak terjangkau")
 
@@ -81,7 +82,7 @@ if st.button("Predict Placement Status", type = 'primary'):
 
     with st.spinner("Menghubungi API Backend..."):
         try:
-            response = requests.post(API_URL, json = payload)
+            response = requests.post(API_URL_BASE, json = payload)
             if response.status_code == 200:
                 result = response.json()
 

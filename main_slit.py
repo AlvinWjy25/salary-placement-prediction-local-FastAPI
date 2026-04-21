@@ -12,6 +12,9 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 BASE_DIR = os.getcwd()
 
+backend = subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000"])
+backend.wait()
+
 st.set_page_config(page_title = "Placement Prediction App", layout = "wide")
 API_URL_BASE = 'http://127.0.0.1:8000/predict'
 

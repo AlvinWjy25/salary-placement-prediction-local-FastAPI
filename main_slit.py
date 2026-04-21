@@ -14,8 +14,13 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 BASE_DIR = os.getcwd()
 
-backend = subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000"])
-backend.wait()
+if "backend_started" not in st.session_state:
+    try:
+        subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000", "--host", "127.0.0.1"])
+        st.session_state["backend_started"] = True
+        time.sleep(2)
+    except Exception as e:
+        st.error(f"Gagal memulai backend: {e}")
 
 st.set_page_config(page_title = "Placement Prediction App", layout = "wide")
 API_URL_BASE = 'http://127.0.0.1:8000/predict'

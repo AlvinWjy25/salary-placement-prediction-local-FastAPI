@@ -20,10 +20,6 @@ if "backend_started" not in st.session_state: #auto start
         subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000", "--host", "127.0.0.1"])
         st.session_state["backend_started"] = True
         time.sleep(2)
-        if info_res:
-            st.sidebar.write(f"Model Aktif Berjalan!")
-        else:
-            st.sidebar.error("Backend tidak terjangkau")
     except Exception as e:
         st.error(f"Gagal memulai backend: {e}")
 
@@ -39,7 +35,13 @@ def get_api_info():
 
 info_res = get_api_info()
 
-
+if info_res:
+    st.sidebar.write(f"Model Aktif Berjalan!")
+else:
+    subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000", "--host", "127.0.0.1"])
+    st.session_state["backend_started"] = True
+    time.sleep(2)
+    st.sidebar.error("Backend tidak terjangkau")
 
 # Streamlit Edits
 st.set_page_config(page_title="Placement Analytics Pro", layout="wide", page_icon="🎓")

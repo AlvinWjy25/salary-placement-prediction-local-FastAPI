@@ -19,8 +19,7 @@ if "backend_started" not in st.session_state: #auto start
     try:
         subprocess.Popen(["uvicorn", "main_fapi:app", "--port", "8000", "--host", "127.0.0.1"])
         st.session_state["backend_started"] = True
-        time.sleep(5)
-        st.sidebar.write(f"Backend Aktif Berjalan!")
+        time.sleep(8)
     except Exception as e:
         st.error(f"Gagal memulai backend: {e}")
 

@@ -33,7 +33,7 @@ else:
 
 st.title("Student Placement Prediction")
 st.write("Masukkan data mahasiswa di bawah ini untuk memprediksi status penempatan.")
-st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
+# st.sidebar.write(f"Model: {info_res['details'][0]['name']}")
 st.divider()
 
 col1, col2, col3 = st.columns(3)

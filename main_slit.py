@@ -35,6 +35,7 @@ def get_api_info():
 
 info_res = get_api_info()
 
+# Status Local Run
 # if info_res:
 #     st.sidebar.write(f"Backend Aktif Berjalan!")
 # else:
@@ -42,13 +43,6 @@ info_res = get_api_info()
 
 # Streamlit Edits
 st.set_page_config(page_title="Placement Analytics Pro", layout="wide")
-# st.markdown("""
-#     <style>
-#     .main { background-color: #f5f7f9; }
-#     .stButton>button { width: 100%; border-radius: 5px; height: 3em; }
-#     .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-#     </style>
-#     """)
 
 #Sidebar
 with st.sidebar:

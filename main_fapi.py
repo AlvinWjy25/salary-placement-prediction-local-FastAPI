@@ -8,8 +8,8 @@ import numpy as np
 app = FastAPI()
 
 BASE_DIR = os.getcwd()
-model_1 = joblib.load(os.path.join(BASE_DIR, 'model_classification_placement.pkl'))
-model_2 = joblib.load(os.path.join(BASE_DIR, 'model_regression_salary.pkl'))
+model_1 = joblib.load(os.path.join(BASE_DIR, 'artifacts', 'model_classification_placement.pkl'))
+model_2 = joblib.load(os.path.join(BASE_DIR, 'artifacts', 'model_regression_salary.pkl'))
 
 @app.get("/")
 def home():
